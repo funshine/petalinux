@@ -17,10 +17,7 @@ ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_SUBSYSTEM_FSBL_SERIAL_PSU_UART_1_SEL
 ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_SUBSYSTEM_ATF_SERIAL_PSU_UART_1_SELECT
 ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_SUBSYSTEM_SERIAL_PSU_UART_1_SELECT
 ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_SUBSYSTEM_MACHINE_NAME -v "\"avnet-ultra96-rev1\""
-if [ "$PETALINUX_BOARD_PROJECT" != "custom" ];
-then
-    ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_USER_LAYER_0 -v "\"\${PROOT}/project-spec/meta-avnet\""
-fi
+# ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_USER_LAYER_0 -v "\"\${PROOT}/project-spec/meta-avnet\""
 
 if [ "$PETALINUX_BOARD_PROJECT" == "base" ];
 then
@@ -29,9 +26,6 @@ elif [ "$PETALINUX_BOARD_PROJECT" == "dualcam" ];
 then
     ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_YOCTO_MACHINE_NAME -v "\"$BASE_YOCTO_MACHINE\""
     ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_USER_LAYER_1 -v "\"\${PROOT}/project-spec/meta-on-semiconductor\""
-elif [ "$PETALINUX_BOARD_PROJECT" == "custom" ];
-then
-    ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_YOCTO_MACHINE_NAME -v "\"$BASE_YOCTO_MACHINE\""
 else
     echo "***WARNING: Unknown board_project name ('$PETALINUX_BOARD_PROJECT'): setting YOCTO_MACHINE_NAME to generic '$BASE_YOCTO_MACHINE'***"
     ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_YOCTO_MACHINE_NAME -v "\"$BASE_YOCTO_MACHINE\""
