@@ -33,7 +33,6 @@ IMAGE_INSTALL_append_zynqmp = "\
         packagegroup-core-ssh-dropbear \
         packagegroup-petalinux-lmsensors \
         parted \
-        pmic-prog \
         run-postinsts \
         tcf-agent \
         udev-extraconf \

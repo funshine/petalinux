@@ -88,8 +88,8 @@ build_bsp ()
   echo -e "\nBuilding project...\n"
 
   # Sometimes the build fails because of fetch or setscene issues, so we try another time
-  # petalinux-build -c ${PETALINUX_BUILD_IMAGE} || petalinux-build -c ${PETALINUX_BUILD_IMAGE}
-  petalinux-build || petalinux-build
+  petalinux-build -c ${PETALINUX_BUILD_IMAGE} || petalinux-build -c ${PETALINUX_BUILD_IMAGE}
+  # petalinux-build || petalinux-build
 
   if [ "$NO_BIT_OPTION" = "yes" ]
   then
