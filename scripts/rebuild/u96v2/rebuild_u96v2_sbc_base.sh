@@ -59,11 +59,11 @@ source ./rebuild_common.sh
 
 verify_environment
 
-BOOT_METHOD='INITRD'
-BOOT_SUFFIX='_MINIMAL'
-INITRAMFS_IMAGE="avnet-image-minimal"
-configure_boot_method
-build_bsp
+# BOOT_METHOD='INITRD'
+# BOOT_SUFFIX='_MINIMAL'
+# INITRAMFS_IMAGE="avnet-image-minimal"
+# configure_boot_method
+# build_bsp
 
 BOOT_METHOD='EXT4'
 unset BOOT_SUFFIX

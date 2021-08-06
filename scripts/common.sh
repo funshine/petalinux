@@ -323,24 +323,24 @@ configure_petalinux_project()
     echo -e "PetaLinux project config is not touched for this build ...\n"
   fi
 
-  # # If tag_stamp.txt file exists and if $BUILD_FROM_TAG is true
-  # if [ -f ${PETALINUX_SCRIPTS_FOLDER}/tag_stamp.txt ] && [ "${BUILD_FROM_TAG}" = "true" ]
-  # then
-  #   # Then clone meta-avnet and checkout git tag ${TAG_STRING} and if that fails 
-  #   # (tag_stamp.txt file may be empty or may not match available git tags) clone meta-avnet master branch
-  #   echo -e "\nClone meta-avnet layer and checkout git tag ${TAG_STRING}\n"
-  #   git clone -b ${TAG_STRING} ${META_AVNET_URL} project-spec/meta-avnet 
-  # else
-  #   # No tag_stamp.txt file found or BUILD_FROM_TAG is set to "false"
-  #   echo -e "\nTag ${TOOL_VER}_${PETALINUX_BOARD_NAME}_${TAG_STAMP} not found.  Cloning ${META_AVNET_BRANCH} branch instead.\n"
-  #   echo -e "\n***WARNING:  This may result in build mismatch!***\n"
-  #   echo -e "\nStop (<ctrl>-c) in the next ${PAUSE_DELAY} seconds if this is not OK. \n"
+  # If tag_stamp.txt file exists and if $BUILD_FROM_TAG is true
+  if [ -f ${PETALINUX_SCRIPTS_FOLDER}/tag_stamp.txt ] && [ "${BUILD_FROM_TAG}" = "true" ]
+  then
+    # Then clone meta-avnet and checkout git tag ${TAG_STRING} and if that fails 
+    # (tag_stamp.txt file may be empty or may not match available git tags) clone meta-avnet master branch
+    echo -e "\nClone meta-avnet layer and checkout git tag ${TAG_STRING}\n"
+    git clone -b ${TAG_STRING} ${META_AVNET_URL} project-spec/meta-avnet 
+  else
+    # No tag_stamp.txt file found or BUILD_FROM_TAG is set to "false"
+    echo -e "\nTag ${TOOL_VER}_${PETALINUX_BOARD_NAME}_${TAG_STAMP} not found.  Cloning ${META_AVNET_BRANCH} branch instead.\n"
+    echo -e "\n***WARNING:  This may result in build mismatch!***\n"
+    echo -e "\nStop (<ctrl>-c) in the next ${PAUSE_DELAY} seconds if this is not OK. \n"
 
-  #   read -t ${PAUSE_DELAY} -p "Pause here for ${PAUSE_DELAY} seconds" || :
+    read -t ${PAUSE_DELAY} -p "Pause here for ${PAUSE_DELAY} seconds" || :
 
-  #   echo -e "\nClone meta-avnet layer and checkout ${META_AVNET_BRANCH} branch\n"
-  #   git clone -b ${META_AVNET_BRANCH} ${META_AVNET_URL} project-spec/meta-avnet
-  # fi
+    echo -e "\nClone meta-avnet layer and checkout ${META_AVNET_BRANCH} branch\n"
+    git clone -b ${META_AVNET_BRANCH} ${META_AVNET_URL} project-spec/meta-avnet
+  fi
 
   if [ "$KEEP_CACHE" = "true" ]
   then
@@ -364,6 +364,41 @@ configure_boot_method ()
   bash ${PETALINUX_CONFIGS_FOLDER}/project/config.boot_method.${BOOT_METHOD}.sh ${PETALINUX_BOARD_NAME} ${PETALINUX_BOARD_FAMILY} ${INITRAMFS_IMAGE}
 
   petalinux-config --silentconfig
+}
+
+copy_scripts ()
+{
+  # Build project
+  echo -e "\nCopying scripts to project...\n"
+
+  # Copy all family boot instructions to the project folder and pre-built images folder.
+  if [ $PETALINUX_BOARD_FAMILY ] && [ -d ${PETALINUX_DOCS_FOLDER}/${PETALINUX_BOARD_FAMILY}/ ] && [ "$(ls -A ${PETALINUX_DOCS_FOLDER}/${PETALINUX_BOARD_FAMILY}/)" ];
+  then
+    cp ${PETALINUX_DOCS_FOLDER}/${PETALINUX_BOARD_FAMILY}/* .
+  fi
+
+  # Copy all family boot scripts to the project folder and pre-built images folder.
+  if [ $PETALINUX_BOARD_FAMILY ] && [ -d ${PETALINUX_SCRIPTS_FOLDER}/boot/${PETALINUX_BOARD_FAMILY}/ ] && [ "$(ls -A ${PETALINUX_SCRIPTS_FOLDER}/boot/${PETALINUX_BOARD_FAMILY}/)" ];
+  then
+    cp ${PETALINUX_SCRIPTS_FOLDER}/boot/${PETALINUX_BOARD_FAMILY}/* .
+  fi
+
+  # Copy rebuild scripts to the project folder and pre-built images folder.
+  if [ $PETALINUX_BOARD_FAMILY ] && [ -d ${PETALINUX_SCRIPTS_FOLDER}/rebuild/${PETALINUX_BOARD_FAMILY}/ ] && [ "$(ls -A ${PETALINUX_SCRIPTS_FOLDER}/rebuild/${PETALINUX_BOARD_FAMILY}/)" ];
+  then
+    cp ${PETALINUX_SCRIPTS_FOLDER}/rebuild/${PETALINUX_BOARD_FAMILY}/rebuild_${HDL_BOARD_NAME}_${HDL_PROJECT_NAME}.sh .
+    cp ${PETALINUX_SCRIPTS_FOLDER}/rebuild/common/rebuild_common.sh .
+  fi
+
+  # Copy all boot method config scripts to the project folder and pre-built images folder.
+  if [ -d ${PETALINUX_CONFIGS_FOLDER}/project/ ] && [ "$(ls -A ${PETALINUX_CONFIGS_FOLDER}/project/)" ];
+  then
+    cp ${PETALINUX_CONFIGS_FOLDER}/project/config.boot_method.EXT4.sh .
+    cp ${PETALINUX_CONFIGS_FOLDER}/project/config.boot_method.INITRD.sh .
+  fi
+
+  # Change to PetaLinux project folder.
+  cd ${PETALINUX_PROJECTS_FOLDER}/${PETALINUX_PROJECT_NAME}
 }
 
 build_bsp ()

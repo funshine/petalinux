@@ -91,6 +91,7 @@ BOOT_METHOD='EXT4'
 unset BOOT_SUFFIX
 unset INITRAMFS_IMAGE
 configure_boot_method
+copy_scripts
 build_bsp
 
 # package_bsp

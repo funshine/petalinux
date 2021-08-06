@@ -36,7 +36,7 @@
 # ----------------------------------------------------------------------------
 
 # Required version of the Xilinx Tools
-REQUIRED_VER=2020.2
+REQUIRED_VER=2021.1
 
 verify_environment ()
 {
@@ -88,7 +88,8 @@ build_bsp ()
   echo -e "\nBuilding project...\n"
 
   # Sometimes the build fails because of fetch or setscene issues, so we try another time
-  petalinux-build -c ${PETALINUX_BUILD_IMAGE} || petalinux-build -c ${PETALINUX_BUILD_IMAGE}
+  # petalinux-build -c ${PETALINUX_BUILD_IMAGE} || petalinux-build -c ${PETALINUX_BUILD_IMAGE}
+  petalinux-build || petalinux-build
 
   if [ "$NO_BIT_OPTION" = "yes" ]
   then
