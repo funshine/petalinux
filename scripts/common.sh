@@ -42,7 +42,7 @@
 # ----------------------------------------------------------------------------
 
 # Required version of the Xilinx Tools
-REQUIRED_VER=2020.2
+REQUIRED_VER=2021.1
 
 #REPOSITORIES_FOLDER is the top level folder which should contain at least the 'bdf', 'hdl' amd 'petalinux' repositories
 REPOSITORIES_FOLDER=$(readlink -f $MAIN_SCRIPT_FOLDER/../..)
@@ -58,8 +58,8 @@ PETALINUX_PROJECTS_FOLDER=${PETALINUX_FOLDER}/projects
 PETALINUX_SCRIPTS_FOLDER=${PETALINUX_FOLDER}/scripts
 PETALINUX_DOCS_FOLDER=${PETALINUX_FOLDER}/documentation
 
-META_AVNET_URL="https://github.com/Avnet/meta-avnet.git"
-META_AVNET_BRANCH="2020.2"
+META_AVNET_URL="https://github.com/funshine/meta-avnet.git"
+META_AVNET_BRANCH="2021.1"
 
 PAUSE_DELAY=5
 BUILD_FROM_TAG="false"
@@ -280,6 +280,9 @@ create_petalinux_project ()
   # Change to PetaLinux projects folder.
   cd ${PETALINUX_PROJECTS_FOLDER}
 
+  # remove old project
+  rm -rf ./${PETALINUX_PROJECT_NAME}
+
   # Create the PetaLinux project.
   petalinux-create --type project --template ${SOC} --name ${PETALINUX_PROJECT_NAME} --force
 
@@ -320,24 +323,24 @@ configure_petalinux_project()
     echo -e "PetaLinux project config is not touched for this build ...\n"
   fi
 
-  # If tag_stamp.txt file exists and if $BUILD_FROM_TAG is true
-  if [ -f ${PETALINUX_SCRIPTS_FOLDER}/tag_stamp.txt ] && [ "${BUILD_FROM_TAG}" = "true" ]
-  then
-    # Then clone meta-avnet and checkout git tag ${TAG_STRING} and if that fails 
-    # (tag_stamp.txt file may be empty or may not match available git tags) clone meta-avnet master branch
-    echo -e "\nClone meta-avnet layer and checkout git tag ${TAG_STRING}\n"
-    git clone -b ${TAG_STRING} ${META_AVNET_URL} project-spec/meta-avnet 
-  else
-    # No tag_stamp.txt file found or BUILD_FROM_TAG is set to "false"
-    echo -e "\nTag ${TOOL_VER}_${PETALINUX_BOARD_NAME}_${TAG_STAMP} not found.  Cloning ${META_AVNET_BRANCH} branch instead.\n"
-    echo -e "\n***WARNING:  This may result in build mismatch!***\n"
-    echo -e "\nStop (<ctrl>-c) in the next ${PAUSE_DELAY} seconds if this is not OK. \n"
+  # # If tag_stamp.txt file exists and if $BUILD_FROM_TAG is true
+  # if [ -f ${PETALINUX_SCRIPTS_FOLDER}/tag_stamp.txt ] && [ "${BUILD_FROM_TAG}" = "true" ]
+  # then
+  #   # Then clone meta-avnet and checkout git tag ${TAG_STRING} and if that fails 
+  #   # (tag_stamp.txt file may be empty or may not match available git tags) clone meta-avnet master branch
+  #   echo -e "\nClone meta-avnet layer and checkout git tag ${TAG_STRING}\n"
+  #   git clone -b ${TAG_STRING} ${META_AVNET_URL} project-spec/meta-avnet 
+  # else
+  #   # No tag_stamp.txt file found or BUILD_FROM_TAG is set to "false"
+  #   echo -e "\nTag ${TOOL_VER}_${PETALINUX_BOARD_NAME}_${TAG_STAMP} not found.  Cloning ${META_AVNET_BRANCH} branch instead.\n"
+  #   echo -e "\n***WARNING:  This may result in build mismatch!***\n"
+  #   echo -e "\nStop (<ctrl>-c) in the next ${PAUSE_DELAY} seconds if this is not OK. \n"
 
-    read -t ${PAUSE_DELAY} -p "Pause here for ${PAUSE_DELAY} seconds" || :
+  #   read -t ${PAUSE_DELAY} -p "Pause here for ${PAUSE_DELAY} seconds" || :
 
-    echo -e "\nClone meta-avnet layer and checkout ${META_AVNET_BRANCH} branch\n"
-    git clone -b ${META_AVNET_BRANCH} ${META_AVNET_URL} project-spec/meta-avnet
-  fi
+  #   echo -e "\nClone meta-avnet layer and checkout ${META_AVNET_BRANCH} branch\n"
+  #   git clone -b ${META_AVNET_BRANCH} ${META_AVNET_URL} project-spec/meta-avnet
+  # fi
 
   if [ "$KEEP_CACHE" = "true" ]
   then
