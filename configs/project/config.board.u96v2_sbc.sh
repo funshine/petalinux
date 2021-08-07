@@ -6,7 +6,7 @@ CONFIG_FILE=project-spec/configs/config
 PETALINUX_BOARD_PROJECT=$1
 PETALINUX_PROJECT_NAME=$2
 
-BASE_YOCTO_MACHINE='ultra96-zynqmp'
+BASE_YOCTO_MACHINE='u96v2-sbc'
 
 # The system Hostname will be the petalinux project name with '-' instead of '_'
 PETALINUX_PROJECT_HOSTNAME=$(echo $PETALINUX_PROJECT_NAME | sed 's/\_/-/g')
@@ -17,7 +17,7 @@ ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_SUBSYSTEM_FSBL_SERIAL_PSU_UART_1_SEL
 ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_SUBSYSTEM_ATF_SERIAL_PSU_UART_1_SELECT
 ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_SUBSYSTEM_SERIAL_PSU_UART_1_SELECT
 ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_SUBSYSTEM_MACHINE_NAME -v "\"avnet-ultra96-rev1\""
-# ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_USER_LAYER_0 -v "\"\${PROOT}/project-spec/meta-avnet\""
+${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_USER_LAYER_0 -v "\"\${PROOT}/project-spec/meta-avnet\""
 
 if [ "$PETALINUX_BOARD_PROJECT" == "base" ];
 then

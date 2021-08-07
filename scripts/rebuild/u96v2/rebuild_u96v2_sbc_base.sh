@@ -53,7 +53,7 @@ HDL_BOARD_NAME=u96v2_sbc
 
 PETALINUX_BOARD_FAMILY=u96v2
 PETALINUX_BOARD_NAME=${HDL_BOARD_NAME}
-PETALINUX_BUILD_IMAGE=avnet-image-minimal
+PETALINUX_BUILD_IMAGE=avnet-image-full
 
 source ./rebuild_common.sh
 
