@@ -31,48 +31,31 @@
 #                              All rights reserved.
 #
 # ----------------------------------------------------------------------------
-#
-#  Create Date:         Sep 16, 2020
-#  Design Name:         PicoZed Base BSP
-#  Module Name:         rebuild_pz7015_fmc2_base.sh
-#  Project Name:        PicoZed Base BSP
-#  Target Devices:      Xilinx Zynq-7015
-#  Hardware Boards:     PicoZed SOM + FMC2 Carrier
-#
-# ----------------------------------------------------------------------------
 
-#!/bin/bash
+# You can run 'xsdb boot_jtag.tcl' to execute"
 
-# Stop the script whenever we had an error (non-zero returning function)
-set -e
+connect
+puts stderr "INFO: Configuring the FPGA..."
+puts stderr "INFO: Downloading bitstream: ./pre-built/linux/implementation/download.bit to the target."
+fpga "./pre-built/linux/implementation/download.bit"
+after 2000
+targets -set -nocase -filter {name =~ "arm*#0"}
 
-FSBL_PROJECT_NAME=zynq_fsbl
-
-HDL_PROJECT_NAME=base
-HDL_BOARD_NAME=pz7015_fmc2
-
-PETALINUX_BOARD_FAMILY=pz
-PETALINUX_BOARD_NAME=${HDL_BOARD_NAME}
-PETALINUX_BUILD_IMAGE=avnet-image-full
-
-source ./rebuild_common.sh
-
-verify_environment
-
-BOOT_METHOD='INITRD'
-BOOT_SUFFIX='_MINIMAL'
-INITRAMFS_IMAGE="avnet-image-minimal"
-configure_boot_method
-build_bsp
-
-BOOT_METHOD='INITRD'
-BOOT_SUFFIX='_FULL'
-INITRAMFS_IMAGE="avnet-image-full"
-configure_boot_method
-build_bsp
-
-BOOT_METHOD='EXT4'
-unset BOOT_SUFFIX
-unset INITRAMFS_IMAGE
-configure_boot_method
-build_bsp
+source ./project-spec/hw-description/ps7_init.tcl; ps7_post_config
+catch {stop}
+set mctrlval [string trim [lindex [split [mrd 0xF8007080] :] 1]]
+puts "mctrlval=$mctrlval"
+puts stderr "INFO: Downloading ELF file: ./pre-built/linux/images/zynq_fsbl.elf to the target."
+dow  "./pre-built/linux/images/zynq_fsbl.elf"
+after 2000
+con
+after 3000; stop
+targets -set -nocase -filter {name =~ "arm*#0"}
+puts stderr "INFO: Loading image: ./pre-built/linux/images/system.dtb at 0x00100000"
+dow -data  "./pre-built/linux/images/system.dtb" 0x00100000
+after 2000
+targets -set -nocase -filter {name =~ "arm*#0"}
+puts stderr "INFO: Downloading ELF file: ./pre-built/linux/images/u-boot.elf to the target."
+dow  "./pre-built/linux/images/u-boot.elf"
+after 2000
+con; after 1000; stop

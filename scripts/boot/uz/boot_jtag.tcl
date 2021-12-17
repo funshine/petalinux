@@ -31,43 +31,44 @@
 #                              All rights reserved.
 #
 # ----------------------------------------------------------------------------
-#
-#  Create Date:         Aug 19, 2020
-#  Design Name:         UltraZed-EV Base BSP
-#  Module Name:         rebuild_uz7ev_evcc_base.sh
-#  Project Name:        UltraZed-EV Base BSP
-#  Target Devices:      Xilinx Zynq UltraScale+ 7EV
-#  Hardware Boards:     UltraZed-EV SOM + EV Carrier
-#
-# ----------------------------------------------------------------------------
 
-#!/bin/bash
+# You can run 'xsdb boot_jtag.tcl' to execute"
 
-# Stop the script whenever we had an error (non-zero returning function)
-set -e
+connect
+puts stderr "INFO: Configuring the FPGA..."
+puts stderr "INFO: Downloading bitstream: ./pre-built/linux/implementation/download.bit to the target."
+fpga "./pre-built/linux/implementation/download.bit"
+after 2000
+targets -set -nocase -filter {name =~ "*PSU*"}
+mask_write 0xFFCA0038 0x1C0 0x1C0
+targets -set -nocase -filter {name =~ "*MicroBlaze PMU*"}
 
-FSBL_PROJECT_NAME=zynqmp_fsbl
+catch {stop}; after 1000
+puts stderr "INFO: Downloading ELF file: ./pre-built/linux/images/pmufw.elf to the target."
+dow  "./pre-built/linux/images/pmufw.elf"
+after 2000
+con
+targets -set -nocase -filter {name =~ "*APU*"}
+mwr 0xffff0000 0x14000000
+mask_write 0xFD1A0104 0x501 0x0
+after 5000
+targets -set -nocase -filter {name =~ "*A53*#0"}
 
-HDL_PROJECT_NAME=base
-HDL_BOARD_NAME=uz7ev_evcc
-
-PETALINUX_BOARD_FAMILY=uz
-PETALINUX_BOARD_NAME=${HDL_BOARD_NAME}
-PETALINUX_BUILD_IMAGE=avnet-image-full
-
-source ./rebuild_common.sh
-
-verify_environment
-
-BOOT_METHOD='INITRD'
-BOOT_SUFFIX='_MINIMAL'
-INITRAMFS_IMAGE="avnet-image-minimal"
-configure_boot_method
-build_bsp
-
-BOOT_METHOD='EXT4'
-unset BOOT_SUFFIX
-unset INITRAMFS_IMAGE
-configure_boot_method
-build_bsp
-
+source ./project-spec/hw-description/psu_init.tcl
+puts stderr "INFO: Downloading ELF file: ./pre-built/linux/images/zynqmp_fsbl.elf to the target."
+dow  "./pre-built/linux/images/zynqmp_fsbl.elf"
+after 2000
+con
+after 4000; stop; catch {stop}; psu_ps_pl_isolation_removal; psu_ps_pl_reset_config
+targets -set -nocase -filter {name =~ "*A53*#0"}
+puts stderr "INFO: Loading image: ./pre-built/linux/images/system.dtb at 0x00100000"
+dow -data  "./pre-built/linux/images/system.dtb" 0x00100000
+after 2000
+targets -set -nocase -filter {name =~ "*A53*#0"}
+puts stderr "INFO: Downloading ELF file: ./pre-built/linux/images/u-boot.elf to the target."
+dow  "./pre-built/linux/images/u-boot.elf"
+after 2000
+targets -set -nocase -filter {name =~ "*A53*#0"}
+puts stderr "INFO: Downloading ELF file: ./pre-built/linux/images/bl31.elf to the target."
+dow  "./pre-built/linux/images/bl31.elf"
+after 2000
