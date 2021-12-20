@@ -29,6 +29,10 @@ elif [ "$PETALINUX_BOARD_PROJECT" == "dualcam" ];
 then
     ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_YOCTO_MACHINE_NAME -v "\"$BASE_YOCTO_MACHINE\""
     ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_USER_LAYER_2 -v "\"\${PROOT}/project-spec/meta-on-semiconductor\""
+elif [ "$PETALINUX_BOARD_PROJECT" == "ltcam" ];
+then
+    ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_YOCTO_MACHINE_NAME -v "\"$BASE_YOCTO_MACHINE\""
+    ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_USER_LAYER_2 -v "\"\${PROOT}/project-spec/meta-lt-camera\""
 else
     echo "***WARNING: Unknown board_project name ('$PETALINUX_BOARD_PROJECT'): setting YOCTO_MACHINE_NAME to generic '$BASE_YOCTO_MACHINE'***"
     ${KCONFIG_EDIT} -c ${CONFIG_FILE} -o CONFIG_YOCTO_MACHINE_NAME -v "\"$BASE_YOCTO_MACHINE\""
