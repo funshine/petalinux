@@ -85,4 +85,4 @@ unset BOOT_SUFFIX
 unset INITRAMFS_IMAGE
 build_bsp
 
-# package_bsp
+package_bsp

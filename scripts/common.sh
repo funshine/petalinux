@@ -247,7 +247,7 @@ create_petalinux_project ()
   # Change to PetaLinux projects folder.
   cd ${PETALINUX_PROJECTS_FOLDER}
 
-  # remove old project
+  # remove old project to save disk space
   rm -rf ./${PETALINUX_PROJECT_NAME}
 
   # Create the PetaLinux project.
